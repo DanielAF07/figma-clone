@@ -7,17 +7,21 @@ import RightSidebar from "@/components/RightSidebar";
 import { useEffect, useRef, useState } from "react";
 import { handleCanvasMouseDown, handleCanvasMouseUp, handleCanvasObjectModified, handleCanvaseMouseMove, handleResize, initializeFabric, renderCanvas } from '@/lib/canvas';
 import { ActiveElement } from '@/types/type';
-import { useMutation, useStorage } from '../../liveblocks.config';
+import { useMutation, useRedo, useStorage, useUndo } from '../../liveblocks.config';
 import { defaultNavElement } from '@/constants';
-import { handleDelete } from '@/lib/key-events';
+import { handleDelete, handleKeyDown } from '@/lib/key-events';
+import { handleImageUpload } from '@/lib/shapes';
 
 export default function Page() {
+  const undo = useUndo()
+  const redo = useRedo()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fabricRef = useRef<fabric.Canvas | null>(null)
   const isDrawing = useRef(false)
   const shapeRef = useRef<fabric.Object | null>(null)
-  const selectedShapeRef = useRef<string | null>('rectangle')
+  const selectedShapeRef = useRef<string | null>(null)
   const activeObjectRef = useRef<fabric.Object | null>(null)
+  const imageInputRef = useRef<HTMLInputElement>(null)
 
   const canvasObjects = useStorage((root) => root.canvasObjects)
 
@@ -40,7 +44,7 @@ export default function Page() {
   const deleteAllShapes = useMutation(({ storage }) => {
     const canvasObjects = storage.get('canvasObjects') || {}
     if(!canvasObjects || canvasObjects.size === 0) return true
-    for (const [key, value] of canvasObjects.entries()) {
+    for (const [key, value] of canvasObjects.entries() as any) {
       canvasObjects.delete(key)
     }
     return canvasObjects.size === 0
@@ -63,6 +67,13 @@ export default function Page() {
       case 'delete':
         handleDelete(fabricRef.current as any, deleteShapeFromStorage)
         setActiveElement(defaultNavElement)
+        break;
+      case 'image':
+        imageInputRef.current?.click()
+        isDrawing.current = false
+        if(fabricRef.current) {
+          fabricRef.current.isDrawingMode = false
+        }
         break;
       default:
         break;
@@ -114,7 +125,18 @@ export default function Page() {
     })
 
     window.addEventListener('resize', () => {
-      handleResize({ fabricRef })
+      handleResize({ fabricRef } as any)
+    })
+
+    window.addEventListener('keydown', (e) => {
+      handleKeyDown({
+        e,
+        canvas: fabricRef.current,
+        undo,
+        redo,
+        syncShapeInStorage,
+        deleteShapeFromStorage
+      })
     })
 
     return () => {
@@ -132,9 +154,22 @@ export default function Page() {
 
   return (
     <main className="h-screen overflow-hidden">
-      <Navbar activeElement={activeElement} handleActiveElement={handleActiveElement} />
+      <Navbar
+        activeElement={activeElement}
+        handleActiveElement={handleActiveElement}
+        imageInputRef={imageInputRef}
+        handleImageUpload={(e: any) => {
+          e.stopPropagation()
+          handleImageUpload({
+            file: e.target.files[0],
+            canvas: fabricRef as any,
+            shapeRef,
+            syncShapeInStorage
+          })
+        }}
+      />
       <section className="flex h-full flex-row">
-        <LeftSidebar />
+        <LeftSidebar allShapes={Array.from(canvasObjects)}/>
           <Live canvasRef={canvasRef} />
         <RightSidebar />
       </section>
