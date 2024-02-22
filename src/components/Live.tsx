@@ -6,6 +6,7 @@ import { CursorMode, CursorState, Reaction, ReactionEvent } from "@/types/type"
 import ReactionSelector from "./reaction/ReactionButton"
 import FlyingReaction from "./reaction/FlyingReaction"
 import useInterval from "@/hooks/useInterval"
+import { Comments } from "./comments/Comments"
 
 interface Props {
   canvasRef: React.MutableRefObject<HTMLCanvasElement | null>
@@ -109,7 +110,7 @@ const Live = ({ canvasRef }: Props) => {
   return (
     <div
       id='canvas'
-      className="h-screen w-full flex justify-center items-center"
+      className="h-screen w-full flex justify-center items-center relative"
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
       onPointerDown={handlePointerDown}
@@ -125,7 +126,6 @@ const Live = ({ canvasRef }: Props) => {
           value={r.value}
         />
       ))}
-      <LiveCursors others={others}/>
       {cursor && (
         <CursorChat
           cursor={cursor}
@@ -139,6 +139,8 @@ const Live = ({ canvasRef }: Props) => {
           setReaction={setReactions}
         />
       )}
+      <LiveCursors others={others}/>
+      <Comments />
     </div>
   )
 }

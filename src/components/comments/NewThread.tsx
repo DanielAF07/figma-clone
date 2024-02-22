@@ -14,9 +14,9 @@ import { ComposerSubmitComment } from "@liveblocks/react-comments/primitives";
 
 import { useMaxZIndex } from "@/lib/useMaxZIndex";
 
-import PinnedComposer from "./PinnedComposer";
 import NewThreadCursor from "./NewThreadCursor";
 import { useCreateThread } from "../../../liveblocks.config";
+import PinnedComposer from "./PinnedComposer";
 
 type ComposerCoords = null | { x: number; y: number };
 
