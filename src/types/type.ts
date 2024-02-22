@@ -11,6 +11,7 @@ export enum CursorMode {
 export type CursorState =
   | {
       mode: CursorMode.Hidden;
+      message?: string;
     }
   | {
       mode: CursorMode.Chat;
