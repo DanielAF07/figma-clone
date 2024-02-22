@@ -150,7 +150,6 @@ export default function Page() {
         setElementAttributes
       })
     })
-
     window.addEventListener('resize', () => {
       handleResize({ fabricRef } as any)
     })
