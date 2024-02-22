@@ -20,9 +20,11 @@ export type CursorState =
     }
   | {
       mode: CursorMode.ReactionSelector;
+      message?: string;
     }
   | {
       mode: CursorMode.Reaction;
+      message?: string;
       reaction: string;
       isPressed: boolean;
     };

@@ -1,5 +1,5 @@
 import CursorSVG from "@/public/assets/CursorSVG"
-import { CursorChatProps, CursorMode } from "@/types/type"
+import { CursorChatProps, CursorMode, CursorState } from "@/types/type"
 
 // 
   // )}
@@ -17,7 +17,7 @@ const CursorChat = ({ cursor, cursorState, setCursorState, updateMyPresence}: Cu
     if (e.key === "Enter") {
       setCursorState({
         mode: CursorMode.Chat,
-        previousMessage: cursorState.message,
+        previousMessage: cursorState.message ?? '',
         message: ""
       })
     } else if (e.key === "Escape") {
