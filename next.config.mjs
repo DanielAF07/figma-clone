@@ -15,8 +15,12 @@ const nextConfig = {
     esmExternals: 'loose'
   },
   webpack: (config) => {
-    config.externals = [...config.externals, { canvas: "canvas" }];  // required to make Konva & react-konva work
-    return config;
+    config.externals.push({
+      canvas: 'commonjs canvas',
+      'utf-8-validate': 'commonjs utf-8-validate',
+      'bufferutil': 'commonjs bufferutil'
+    })
+    return config
   },
   images: {
     remotePatterns: [
